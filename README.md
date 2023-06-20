@@ -17,7 +17,7 @@ My Skills
 - MySQL, PostgreSQL, SQLite, SQL Server, GraphQL, MongoDB, DynamoDB
 - REST API, Docker, Kubernetes, AWS, GCP
 
-You can find more in my [note book](https://www.tigerzh.com/document/note/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96.html) ,  Finally, some [music for you](https://www.tigerzh.com/music/).
+You can find more in my [note book](https://tigerzh.com)) ,  Finally, some [music for you](https://www.tigerzh.com/music/).
 
 <table><tr><td valign="top" width="50%">
 <p align="center">
