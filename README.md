@@ -17,9 +17,9 @@ My Skills
 - MySQL, PostgreSQL, SQLite, SQL Server, GraphQL, MongoDB, DynamoDB
 - REST API, Docker, Kubernetes, AWS, GCP
 
-<img align='left' width='47%' src='https://github-readme-stats.vercel.app/api?username=hugozach&show_icons=true&theme=jolly'/>
+<img align='left' width='47%' src='https://github-readme-stats.vercel.app/api?username=hugsin&show_icons=true&theme=jolly'/>
 
-<img width='39%' src='https://github-readme-stats.vercel.app/api/top-langs/?username=hugozach&layout=compact'/>
+<img width='39%' src='https://github-readme-stats.vercel.app/api/top-langs/?username=hugsin&layout=compact'/>
 
 
 You can find more in my [note book](https://www.tigerzh.com/document/note/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96.html) ,  Finally, some [music for you](https://www.tigerzh.com/music/).
