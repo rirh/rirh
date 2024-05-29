@@ -7,12 +7,12 @@ And my strengths are creativity and persistence.
 I love failures, learning from failure and how to deal with failure next time. Thus being optimistic, never give up to realize the dream.
 
 My Skills
-- Python, Django, Flask, Streamlit, Selenium
-- HTML / CSS, JavaScript, TypeScript, ECMA6
-- Django(DRF), Flask
+- GOlang, Python, Selenium
+- HTML5 / CSS3, JavaScript, TypeScript, ECMAX
+- Django(DRF), Flask, FastAPI, Gin
 - React, Next.js ,Vue.js, Nuxt.js
 - Webpack, Babel,
-- Material-UI, Tailwind CSS, BootStrap
+- Material-UI, Tailwind CSS
 - Node.js, Express.js, Nest.js
 - MySQL, PostgreSQL, SQLite, SQL Server, GraphQL, MongoDB, DynamoDB
 - REST API, Docker, Kubernetes, AWS, GCP
