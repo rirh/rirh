@@ -31,10 +31,10 @@ jobs:
           switches: '-avz --delete'
           path: './.vitepress/dist/'
           remote_path: '/var/www/html/z-doc'
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_host:  ${{ secrets.SSH_HOST }}
+          remote_user: root
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          remote_port: ${{ secrets.SSH_PORT }}
+          remote_port: 22
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
