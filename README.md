@@ -1,4 +1,6 @@
-# Web Expert with latest technologies
+# GPG Signature
+
+[EDEE81E4E5DA88F9](https://keyserver.ubuntu.com/pks/lookup?search=EDEE81E4E5DA88F9&fingerprint=on&op=index)
 
 I am a creative software engineer with practical experience in website and mobile app front-end development.
 I love to work with diverse talents in agile work environments.
@@ -17,15 +19,4 @@ My Skills
 - MySQL, PostgreSQL, SQLite, SQL Server, GraphQL, MongoDB, DynamoDB
 - REST API, Docker, Kubernetes, AWS, GCP
 
-<img align='left' width='47%' src='https://github-readme-stats.vercel.app/api?username=hugsin&show_icons=true&theme=jolly'/>
-
-<img width='39%' src='https://github-readme-stats.vercel.app/api/top-langs/?username=hugsin&layout=compact'/>
-
-
-You can find more in my [note book](https://www.tigerzh.com/document/note/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96.html) ,  Finally, some [music for you](https://www.tigerzh.com/music/).
-
-<table><tr><td valign="top" width="50%">
-<p align="center">
-  <img  src="github-contribution-grid-snake.svg"
-    alt="example" />
-</p></td></tr></table>
+<img align='left' width='47%' src='https://github-readme-stats.vercel.app/api?username=rirh&show_icons=true&theme=jolly'/>
