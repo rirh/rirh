@@ -1,0 +1,53 @@
+{
+  "name": "stabio",
+  "description": "stabio rirh blog",
+  "author": "rirh <i@tigerzh.com>",
+  "homepage": "https://tigerzh.com",
+  "private": true,
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "git": "git add . && git cz && git push"
+  },
+  "dependencies": {
+    "@vue/repl": "^4.1.1",
+    "@vueuse/core": "^10.9.0",
+    "@withtypes/md5": "^0.1.1",
+    "animate.css": "^4.1.1",
+    "axios": "^1.6.8",
+    "cz-conventional-changelog": "^3.3.0",
+    "dayjs": "^1.11.10",
+    "dynamics.js": "^1.1.5",
+    "gitalk": "^1.8.0",
+    "gsap": "^3.12.5",
+    "husky": "^9.0.11",
+    "localStorage": "^1.0.4",
+    "localforage": "^1.10.0",
+    "normalize.css": "^8.0.1",
+    "shiki": "^1.3.0",
+    "three": "^0.163.0",
+    "vite-plugin-banner": "^0.7.1",
+    "vitepress": "1.3.2",
+    "vue": "^3.4.35"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "devDependencies": {
+    "@octokit/core": "^6.1.2",
+    "@types/markdown-it": "^14.0.1",
+    "@types/node": "^20.12.7",
+    "terser": "^5.30.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  }
+}
