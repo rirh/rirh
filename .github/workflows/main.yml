@@ -25,16 +25,29 @@ jobs:
       - name: Build the project
         run: npm run build
 
-      - name: Deploy to server using rsync
-        uses: burnett01/rsync-deployments@7.0.1
-        with:
-          switches: "-avz --delete"
-          path: "./.vitepress/dist/"
-          remote_path: "/var/www/html/rirh"
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{secrets.SSH_USERNAME}}
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          remote_port: ${{ secrets.SSH_PORT }}
+      - name: Compress Files
+        run: |
+          tar -czf dist.tar.gz .vitepress/dist/
+
+      - name: Upload Compressed File via SCP
+        run: |
+          scp -P ${{ secrets.SSH_PORT }} -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}") ./dist.tar.gz ${{
+            secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/html/rirh
+
+      - name: Unpack and Cleanup on Server
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key -p ${{ secrets.SSH_PORT }} ${{
+            secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << EOF
+            set -ex
+            cd /var/www/html/rirh
+            tar -xzvf dist.tar.gz
+            rm -rf dist.tar.gz
+          EOF
+
+      - name: Remove Local Archive
+        run: |
+          rm dist.tar.gz
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
