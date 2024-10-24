@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # 请根据你的项目需求选择 Node.js 版本
+          node-version: "18" # 请根据你的项目需求选择 Node.js 版本
 
       - name: Install dependencies
         run: npm install
@@ -28,13 +28,13 @@ jobs:
       - name: Deploy to server using rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: '-avz --delete'
-          path: './.vitepress/dist/'
-          remote_path: '/var/www/html/z-doc'
-          remote_host:  ${{ secrets.SSH_HOST }}
-          remote_user: root
+          switches: "-avz --delete"
+          path: "./.vitepress/dist/"
+          remote_path: "/var/www/html/rirh"
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{secrets.SSH_USERNAME}}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          remote_port: 22
+          remote_port: ${{ secrets.SSH_PORT }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
