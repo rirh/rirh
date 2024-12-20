@@ -178,7 +178,8 @@ export default {
         { text: '响应式布局指南', link: '/note/响应式布局指南' },
         { text: '深色模式指南', link: '/note/深色模式指南' },
         { text: '取色器API', link: '/note/取色器' },
-        { text: 'Vue CLI 打包优化指南', link: '/note/vue-cli打包体积优化' }
+        { text: 'Vue CLI 打包优化指南', link: '/note/vue-cli打包体积优化' },
+        { text: 'Kubectl K3s 使用笔记', link: '/note/k3s使用指南' }
       ]
     },
     {
