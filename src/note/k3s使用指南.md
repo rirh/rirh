@@ -14,7 +14,7 @@ multipass launch -n k3s-agent-02  -c 1 -m 1G -d 10G
 
 ```shell
 K3S_TOKEN="UZusxsweWvSCw4xdI/4emg==" # 设置 Token
-curl -sfL "https://get.k3s.io" | K3S_TOKEN="$K3S_TOKEN" sh -s - server --cluster-init --disable=traefik --write-kubeconfig-mode 644
+curl -sfL "https://get.k3s.io" | K3S_TOKEN="$K3S_TOKEN" sh -s - server --cluster-init  --write-kubeconfig-mode 644
 mkdir -p ~/.kube
 sudo k3s kubectl config view --raw > ~/.kube/config
 chmod 600 ~/.kube/config
