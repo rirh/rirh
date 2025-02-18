@@ -13,11 +13,32 @@ multipass launch -n k3s-agent-02  -c 1 -m 1G -d 10G
 ##### 安装主节点
 
 ```shell
-K3S_TOKEN="UZusxsweWvSCw4xdI/4emg==" # 设置 Token
-curl -sfL "https://get.k3s.io" | K3S_TOKEN="$K3S_TOKEN" sh -s - server --cluster-init  --write-kubeconfig-mode 644
+#!/bin/bash
+# 设置 Token
+K3S_TOKEN="UZusxsweWvSCw4xdI/4emg=="
+PORT="27390"
+
+# 安装 K3S
+curl -sfL "https://get.k3s.io" | \
+    K3S_TOKEN="$K3S_TOKEN" \
+    sh -s - server \
+    --write-kubeconfig-mode 644 \
+    --kubelet-arg="time-zone-file=/etc/localtime" \
+    --bind-address=0.0.0.0 \  # 绑定所有可用网络接口
+    --advertise-address=$(hostname -I | awk '{print $1}')  # 广播本机的外部 IP 地址
+    --https-listen-port="$PORT"  # 设置 K3S API 服务器监听的端口为 27390
+
+
+# 创建 .kube 目录
 mkdir -p ~/.kube
+
+# 复制配置文件并设置权限
 sudo k3s kubectl config view --raw > ~/.kube/config
 chmod 600 ~/.kube/config
+
+# 确保 K3S 服务正常启动
+sudo systemctl status k3s
+
 ``````
 
 ##### 获取主节点TOKEN
@@ -39,8 +60,8 @@ root@k3s-master: hostname -I
 ##### 安装agent节点
 
 ```shell
-MASTER_IP="192.168.64.26"
-MASTER_TOKEN="K1088e57dc546ba14e8bda05f1c6dd1554f1faf42758258c61f727fb4091c8942c9::server:UZusxsweWvSCw4xdI/4emg=="
+MASTER_IP="10.0.0.216"
+MASTER_TOKEN="K105c082fd549f80a7bfb98082463f0829400cbfeba5af8c1738bbc28ac2135eceb::server:UZusxsweWvSCw4xdI/4emg=="
 curl -sfL https://get.k3s.io | sh -s agent --server "https://$MASTER_IP:6443" --token $MASTER_TOKEN
 ```
 
@@ -114,4 +135,26 @@ kubectl apply -f redis.yml -n voh
    kubectl logs <pod-name> -n <namespace>
    ```
 
-   
+
+
+
+##### 查看所有的pods 
+
+``` 
+kubectl get pods -A
+```
+
+##### 重新部署某个组件
+
+```
+kubectl rollout restart deployment [deployment name] -n [namespace]
+```
+
+
+
+
+
+
+
+
+
