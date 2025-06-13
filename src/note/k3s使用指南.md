@@ -34,6 +34,8 @@ sudo modprobe br_netfilter
 echo 'net.bridge.bridge-nf-call-iptables=1' | sudo tee -a /etc/sysctl.conf
 echo 'net.ipv4.ip_forward=1' | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
+net.bridge.bridge-nf-call-iptables=1
+net.ipv4.ip_forward=1
 ```
 
 ---
@@ -106,14 +108,13 @@ sudo hostnamectl set-hostname <新主机名>
 
 ```conf
 127.0.0.1       localhost
+127.0.0.1       server-at-138
 ::1             localhost ip6-localhost ip6-loopback
 ff02::1         ip6-allnodes
 ff02::2         ip6-allrouters
 
-# 以下为所有 server 节点的内网/公网IP与主机名
-188.209.141.139 panel-hk-01
-129.151.228.240 panel-fr-02
-8.222.219.84    panel-sg-03
+
+
 ```
 
 ---
@@ -198,6 +199,12 @@ curl -sfL https://get.k3s.io | sh -s - server \
     --node-ip=<本机虚拟IP> \
     --advertise-address=<本机虚拟IP> \
     --tls-san=k3s.h06i.com
+
+curl -sfL https://get.k3s.io | sh -s - server \
+    --cluster-init \
+    --node-ip=100.0.0.1 \
+    --advertise-address=100.0.0.1 \
+    --tls-san=k3s.h06i.com
 ```
 > `<本机虚拟IP>` 为 Netmaker 分配的 IP，例如 10.10.0.2
 
@@ -221,6 +228,13 @@ curl -sfL https://get.k3s.io | sh -s - server \
        --node-ip=<本机虚拟IP> \
        --advertise-address=<本机虚拟IP> \
        --tls-san=k3s.h06i.com
+   
+   K3S_TOKEN="K10151a69c8777d06210ad7eeff20969305d927073cd1748e68626dc3b3358c46a6::server:1b5e4d6b6af8e20ce1c3a4331aeb8fd0"
+   curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - server \
+       --server https://100.0.0.1:6443 \
+       --node-ip=100.0.0.3 \
+       --advertise-address=100.0.0.3 \
+       --tls-san=k3s.h06i.com   
    ```
    > `<第一个节点虚拟IP>` 为如 10.10.0.2，`<本机虚拟IP>` 为本节点分配的虚拟IP
 
@@ -241,6 +255,12 @@ curl -sfL https://get.k3s.io | sh -s - server \
    curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - agent \
        --server https://<任一server虚拟IP>:6443 \
        --node-ip=<本机虚拟IP>
+       
+    K3S_TOKEN="K10151a69c8777d06210ad7eeff20969305d927073cd1748e68626dc3b3358c46a6::server:1b5e4d6b6af8e20ce1c3a4331aeb8fd0"
+   curl -sfL https://get.k3s.io | K3S_TOKEN=$K3S_TOKEN sh -s - agent \
+       --server https://100.0.0.1:6443 \
+       --node-ip=100.0.0.4
+    
    ```
 
 ---
