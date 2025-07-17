@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServerTable 组件演示</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .sticky-column {
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 10;
+        }
+        
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sortable:hover {
+            background-color: #f9fafb;
+        }
+        
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // Lucide icons as simple SVG components
+        const ChevronUp = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m18 15-6-6-6 6"/>
+            </svg>
+        );
+
+        const ChevronDown = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m6 9 6 6 6-6"/>
+            </svg>
+        );
+
+        const ChevronsUpDown = ({ className }) => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="m7 15 5 5 5-5"/>
+                <path d="m7 9 5-5 5 5"/>
+            </svg>
+        );
+
+        const Search = () => (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+            </svg>
+        );
+
+        // Sample data with more realistic server information
+        const sampleServerData = [
+            {
+                id: "1",
+                instance: "web-server-01",
+                health: 98,
+                cpuUsage: 45,
+                memoryUsage: 67,
+                status: "healthy",
+                location: "US-East-1",
+                uptime: "15天 4小时"
+            },
+            {
+                id: "2", 
+                instance: "api-server-02",
+                health: 85,
+                cpuUsage: 78,
+                memoryUsage: 89,
+                status: "warning",
+                location: "EU-West-1",
+                uptime: "8天 12小时"
+            },
+            {
+                id: "3",
+                instance: "db-server-03", 
+                health: 45,
+                cpuUsage: 95,
+                memoryUsage: 96,
+                status: "critical",
+                location: "Asia-Pacific-1",
+                uptime: "2天 6小时"
+            },
+            {
+                id: "4",
+                instance: "cache-server-04",
+                health: 92,
+                cpuUsage: 23,
+                memoryUsage: 45,
+                status: "healthy",
+                location: "US-West-2",
+                uptime: "25天 8小时"
+            },
+            {
+                id: "5",
+                instance: "lb-server-05",
+                health: 88,
+                cpuUsage: 34,
+                memoryUsage: 56,
+                status: "healthy",
+                location: "EU-Central-1",
+                uptime: "12天 3小时"
+            },
+            {
+                id: "6",
+                instance: "backup-server-06",
+                health: 93,
+                cpuUsage: 15,
+                memoryUsage: 38,
+                status: "healthy",
+                location: "Asia-SE-1",
+                uptime: "30天 12小时"
+            }
+        ];
+
+        // Column configuration with sorting capabilities
+        const columns = [
+            {
+                field: "instance",
+                label: "实例名称",
+                sortable: false, // Text columns are not sortable per requirements
+                width: "240px",
+                render: (value, row) => (
+                    <div className="font-medium">
+                        <div className="text-sm font-semibold text-gray-900">{value}</div>
+                        <div className="text-xs text-gray-500">{row.location}</div>
+                    </div>
+                )
+            },
+            {
+                field: "health",
+                label: "健康值",
+                sortable: true, // Numerical column - sortable
+                width: "120px",
+                render: (value) => (
+                    <div className="text-center">
+                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            value >= 90 ? "bg-green-100 text-green-800" :
+                            value >= 70 ? "bg-yellow-100 text-yellow-800" :
+                            "bg-red-100 text-red-800"
+                        }`}>
+                            {value}%
+                        </div>
+                    </div>
+                )
+            },
+            {
+                field: "cpuUsage",
+                label: "CPU使用率",
+                sortable: true, // Numerical column - sortable
+                width: "160px",
+                render: (value) => (
+                    <div className="space-y-1">
+                        <div className="text-sm font-medium">{value}%</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                    value >= 80 ? "bg-red-500" :
+                                    value >= 60 ? "bg-yellow-500" :
+                                    "bg-green-500"
+                                }`}
+                                style={{ width: `${value}%` }}
+                            />
+                        </div>
+                    </div>
+                )
+            },
+            {
+                field: "memoryUsage",
+                label: "内存使用率",
+                sortable: true, // Numerical column - sortable
+                width: "160px",
+                render: (value) => (
+                    <div className="space-y-1">
+                        <div className="text-sm font-medium">{value}%</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                    value >= 80 ? "bg-red-500" :
+                                    value >= 60 ? "bg-yellow-500" :
+                                    "bg-green-500"
+                                }`}
+                                style={{ width: `${value}%` }}
+                            />
+                        </div>
+                    </div>
+                )
+            },
+            {
+                field: "status",
+                label: "状态",
+                sortable: false, // Status column - not sortable per requirements
+                width: "120px",
+                render: (value) => {
+                    const statusConfig = {
+                        healthy: { bg: "bg-green-100", text: "text-green-800", label: "健康" },
+                        warning: { bg: "bg-yellow-100", text: "text-yellow-800", label: "警告" },
+                        critical: { bg: "bg-red-100", text: "text-red-800", label: "严重" }
+                    };
+                    const config = statusConfig[value];
+                    return (
+                        <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+                            {config.label}
+                        </div>
+                    );
+                }
+            },
+            {
+                field: "uptime",
+                label: "运行时间", 
+                sortable: false, // Text-based time format - not sortable per requirements
+                width: "140px",
+            }
+        ];
+
+        function ServerTable({ data = sampleServerData }) {
+            const [searchTerm, setSearchTerm] = useState("");
+            const [sortField, setSortField] = useState(null);
+            const [sortDirection, setSortDirection] = useState(null);
+
+            // Filter and sort data
+            const processedData = useMemo(() => {
+                let filtered = data.filter(row =>
+                    row.instance.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    row.location.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+
+                if (sortField && sortDirection) {
+                    filtered.sort((a, b) => {
+                        const aVal = a[sortField];
+                        const bVal = b[sortField];
+                        
+                        if (typeof aVal === "number" && typeof bVal === "number") {
+                            return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
+                        }
+                        
+                        const aStr = String(aVal).toLowerCase();
+                        const bStr = String(bVal).toLowerCase();
+                        if (sortDirection === "asc") {
+                            return aStr < bStr ? -1 : aStr > bStr ? 1 : 0;
+                        } else {
+                            return aStr > bStr ? -1 : aStr < bStr ? 1 : 0;
+                        }
+                    });
+                }
+
+                return filtered;
+            }, [data, searchTerm, sortField, sortDirection]);
+
+            // Handle sorting
+            const handleSort = (field, sortable) => {
+                if (!sortable) return;
+
+                if (sortField === field) {
+                    if (sortDirection === "asc") {
+                        setSortDirection("desc");
+                    } else if (sortDirection === "desc") {
+                        setSortDirection(null);
+                        setSortField(null);
+                    } else {
+                        setSortDirection("asc");
+                    }
+                } else {
+                    setSortField(field);
+                    setSortDirection("asc");
+                }
+            };
+
+            // Get sort icon
+            const getSortIcon = (field, sortable) => {
+                if (!sortable) return null;
+
+                if (sortField === field) {
+                    if (sortDirection === "asc") {
+                        return <ChevronUp />;
+                    } else if (sortDirection === "desc") {
+                        return <ChevronDown />;
+                    }
+                }
+                return <ChevronsUpDown className="opacity-50" />;
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 py-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="space-y-6">
+                            {/* Header */}
+                            <div className="text-center space-y-2">
+                                <h1 className="text-4xl font-bold text-gray-900">服务器状态监控</h1>
+                                <p className="text-lg text-gray-600">
+                                    实时监控服务器状态，包括健康值、CPU使用率、内存使用率等关键指标
+                                </p>
+                            </div>
+
+                            {/* Search input */}
+                            <div className="flex justify-center">
+                                <div className="relative max-w-md w-full">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Search className="text-gray-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="搜索实例或位置..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Table with fixed first column */}
+                            <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <div style={{ minWidth: "800px" }}>
+                                        <table className="w-full text-sm border-collapse">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    {columns.map((column, index) => (
+                                                        <th
+                                                            key={column.field}
+                                                            style={{ 
+                                                                width: column.width,
+                                                                minWidth: column.width 
+                                                            }}
+                                                            className={`
+                                                                px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200
+                                                                ${index === 0 ? 'sticky-column border-r' : ''}
+                                                                ${column.sortable ? 'sortable transition-colors' : ''}
+                                                            `}
+                                                            onClick={() => handleSort(column.field, column.sortable)}
+                                                        >
+                                                            <div className="flex items-center space-x-1">
+                                                                <span>{column.label}</span>
+                                                                {getSortIcon(column.field, column.sortable)}
+                                                            </div>
+                                                        </th>
+                                                    ))}
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {processedData.map((row, rowIndex) => (
+                                                    <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                                                        {columns.map((column, index) => (
+                                                            <td
+                                                                key={column.field}
+                                                                style={{ 
+                                                                    width: column.width,
+                                                                    minWidth: column.width 
+                                                                }}
+                                                                className={`
+                                                                    px-6 py-4 whitespace-nowrap
+                                                                    ${index === 0 ? 'sticky-column border-r border-gray-200' : ''}
+                                                                `}
+                                                            >
+                                                                {column.render 
+                                                                    ? column.render(row[column.field], row)
+                                                                    : row[column.field]
+                                                                }
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Results summary */}
+                            <div className="text-center">
+                                <div className="inline-flex items-center px-4 py-2 bg-gray-100 rounded-lg text-sm text-gray-600">
+                                    显示 <span className="font-semibold mx-1">{processedData.length}</span> 个结果，
+                                    共 <span className="font-semibold mx-1">{data.length}</span> 个服务器实例
+                                </div>
+                            </div>
+
+                            {/* Feature highlights */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-blue-900 mb-3">组件特性</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-blue-800">数值列排序功能</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-blue-800">固定首列布局</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-blue-800">Lucide React 图标</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span className="text-blue-800">响应式设计</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the component
+        ReactDOM.render(<ServerTable />, document.getElementById('root'));
+    </script>
+</body>
+</html>

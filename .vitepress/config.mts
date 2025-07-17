@@ -77,8 +77,13 @@ export default defineConfig({
     define: {
       __VUE_OPTIONS_API__: false
     },
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, '../src')
+      }
+    },
     optimizeDeps: {
-      include: ['gsap', 'dynamics.js'],
+      include: ['gsap', 'dynamics.js', 'react', 'react-dom'],
       exclude: ['@vue/repl']
     },
     // @ts-ignore
